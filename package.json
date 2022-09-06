@@ -19,7 +19,7 @@
   "scripts": {
     "prepare": "tsc"
   },
-  "dependencies": {
+  "peerDependencies": {
     "oceanic.js": "^0.0.10"
   },
   "devDependencies": {
