@@ -1,0 +1,29 @@
+{
+  "name": "oceanic-collectors",
+  "version": "1.0.0",
+  "description": "Fully typed collectors for Oceanic.",
+  "keywords": [
+    "oceanic",
+    "oceanic.js",
+    "collector",
+    "interaction",
+    "message",
+    "reaction"
+  ],
+  "author": "Nuckyz#7878",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16.16.0"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "prepare": "tsc"
+  },
+  "dependencies": {
+    "oceanic.js": "^0.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.7.4"
+  }
+}
