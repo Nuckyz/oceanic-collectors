@@ -8,7 +8,9 @@ export interface CollectedReaction<T extends Oceanic.Message> {
 	user: Oceanic.Member | Oceanic.Uncached;
 }
 
-export class ReactionCollector<T extends Oceanic.Message> extends Collector<CollectedReaction<T>> {
+export type ReactionCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete' | 'messageDelete';
+
+export class ReactionCollector<T extends Oceanic.Message> extends Collector<CollectedReaction<T>, ReactionCollectorEndReasons> {
 	public constructor(private client: Oceanic.Client, private message: T, public options: CollectorOptions<CollectedReaction<T>> = {}) {
 		super(options);
 

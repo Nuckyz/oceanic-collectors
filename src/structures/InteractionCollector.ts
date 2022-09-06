@@ -33,7 +33,9 @@ export type InteractionCollectorOptionsWithGenerics<K extends InteractionTypes, 
 	interactionType?: K;
 } & InteractionCollectorOptions
 
-export class InteractionCollector<K extends InteractionTypes = InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K] = keyof MappedInteractionTypesToComponentTypes[K]> extends Collector<MappedInteractionTypesToComponentTypes[K][T]> {
+export type InteractionCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete' | 'messageDelete';
+
+export class InteractionCollector<K extends InteractionTypes = InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K] = keyof MappedInteractionTypesToComponentTypes[K]> extends Collector<MappedInteractionTypesToComponentTypes[K][T], InteractionCollectorEndReasons> {
 	private channel: Oceanic.AnyTextChannel | Uncached | null = null;
 	private componentType: T | null = null;
 	private guildId: string | null = null;

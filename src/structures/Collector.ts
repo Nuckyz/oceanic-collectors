@@ -1,10 +1,10 @@
 import TypedEventEmitter from './TypedEventEmitter';
 
-export interface CollectorEvents<T> {
+export interface CollectorEvents<T, V extends string | BaseCollectorEndReasons> {
 	collect: (collected: T) => any;
 	dispose: (disposed: any) => any;
 	ignore: (ignored: T) => any;
-	end(collected: T[], reason: string): any;
+	end(collected: T[], reason: V): any;
 }
 
 export interface CollectorOptions<T> {
@@ -15,12 +15,14 @@ export interface CollectorOptions<T> {
 	filter?(colleted: T): boolean | Promise<boolean>;
 }
 
-export abstract class Collector<T> extends TypedEventEmitter<CollectorEvents<T>> {
+export type BaseCollectorEndReasons = 'time' | 'idle' | 'limit' | 'user';
+
+export abstract class Collector<T, V extends string> extends TypedEventEmitter<CollectorEvents<T, V | BaseCollectorEndReasons>> {
 	private idleTimeout: NodeJS.Timeout | null = null;
 	private max: number | null = null;
 	private timeout: NodeJS.Timeout | null = null;
 
-	protected endReason: string | null = null;
+	protected endReason: V | BaseCollectorEndReasons | null = null;
 
 	public collected: T[] = [];
 	public ended = false;
@@ -152,7 +154,7 @@ export abstract class Collector<T> extends TypedEventEmitter<CollectorEvents<T>>
 		}
 	}
 
-	public stop(reason = 'user'): void {
+	public stop(reason: V | BaseCollectorEndReasons = 'user'): void {
 		if (this.ended) return;
 
 		if (this.timeout) {

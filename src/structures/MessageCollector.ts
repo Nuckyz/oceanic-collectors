@@ -2,7 +2,9 @@ import Collector, { CollectorOptions } from './Collector';
 import { Uncached, PossiblyUncachedMessage, PossiblyUncachedThread } from '../types';
 import * as Oceanic from 'oceanic.js';
 
-export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collector<Oceanic.Message<T>> {
+export type MessageCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete';
+
+export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collector<Oceanic.Message<T>, MessageCollectorEndReasons> {
 	public constructor(private client: Oceanic.Client, private channel: T, public options: CollectorOptions<Oceanic.Message<T>> = {}) {
 		super(options);
 
