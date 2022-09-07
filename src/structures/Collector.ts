@@ -45,16 +45,15 @@ export abstract class Collector<T, V extends string> extends TypedEventEmitter<C
 		this.handleDispose = this.handleDispose.bind(this);
 	}
 
-	protected async handleCollect(collected: any): Promise<void> {
-		const collectedThing = await this.collect(collected);
+	protected async handleCollect(toHandle: any): Promise<void> {
+		const collected = await this.collect(toHandle);
 
-		if (collectedThing) {
-			const filterResult = await this.filter(collectedThing);
+		if (collected) {
+			const filterResult = await this.filter(collected);
 
 			if (filterResult) {
-				this.collected.push(collectedThing);
-
-				this.emit('collect', collectedThing);
+				this.collected.push(collected);
+				this.emit('collect', collected);
 
 				if (this.idleTimeout) {
 					clearTimeout(this.idleTimeout);
@@ -63,7 +62,7 @@ export abstract class Collector<T, V extends string> extends TypedEventEmitter<C
 
 				if (this.max && this.collected.length >= this.max) this.stop('limit');
 			} else {
-				this.emit('ignore', collectedThing);
+				this.emit('ignore', collected);
 			}
 		}
 
@@ -73,12 +72,11 @@ export abstract class Collector<T, V extends string> extends TypedEventEmitter<C
 	protected async handleDispose(collected: any): Promise<void> {
 		if (!this.options.dispose) return;
 
-		const dispose = this.dispose(collected);
+		const dispose = await this.dispose(collected);
 
 		if (!dispose || !(await this.filter(dispose)) || !this.collected.includes(dispose)) return;
 
 		this.collected.splice(this.collected.indexOf(dispose), 1);
-
 		this.emit('dispose', dispose);
 
 		this.checkEnd();
