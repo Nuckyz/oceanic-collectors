@@ -17,7 +17,7 @@ export interface CollectorOptions<T> {
 
 export type BaseCollectorEndReasons = 'time' | 'idle' | 'limit' | 'user';
 
-export abstract class Collector<T, V extends string> extends TypedEventEmitter<CollectorEvents<T, V | BaseCollectorEndReasons>> {
+export abstract class Collector<T, V extends string = string> extends TypedEventEmitter<CollectorEvents<T, V | BaseCollectorEndReasons>> {
 	private idleTimeout: NodeJS.Timeout | null = null;
 	private max: number | null = null;
 	private timeout: NodeJS.Timeout | null = null;
