@@ -40,7 +40,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 
 	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
 		if (this.channel instanceof Oceanic.GuildChannel) {
-			if (guild.id === this.channel.guild.id) {
+			if (guild.id === this.channel.guildID) {
 				this.stop('guildDelete');
 			}
 		}
@@ -53,13 +53,13 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 	}
 
 	public collect(message: Oceanic.Message<T>): Oceanic.Message<T> | null {
-		if (message.channel.id !== this.channel.id) return null;
+		if (message.channelID !== this.channel.id) return null;
 
 		return message;
 	}
 
 	public dispose(message: Oceanic.PossiblyUncachedMessage): Oceanic.PossiblyUncachedMessage | null {
-		if (message.channel.id !== this.channel.id) return null;
+		if (message.channel?.id !== this.channel.id) return null;
 
 		return message;
 	}

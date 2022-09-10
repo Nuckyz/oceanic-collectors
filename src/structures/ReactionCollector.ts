@@ -45,14 +45,14 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 	}
 
 	private handleChannelDeletion(channel: Oceanic.AnyChannel): void {
-		if (channel.id === this.message.channel.id || (this.message.channel instanceof Oceanic.GuildChannel && channel.id === this.message.channel.parentID)) {
+		if (channel.id === this.message.channelID || (this.message.channel instanceof Oceanic.GuildChannel && channel.id === this.message.channel.parentID)) {
 			this.stop('channelDelete');
 		}
 	}
 
 	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
 		if (this.message.channel instanceof Oceanic.GuildChannel) {
-			if (guild.id === this.message.channel.guild.id) {
+			if (guild.id === this.message.channel.guildID) {
 				this.stop('guildDelete');
 			}
 		}
@@ -65,7 +65,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 	}
 
 	private handleThreadDeletion(thread: Oceanic.PossiblyUncachedThread): void {
-		if (thread.id === this.message.channel.id) {
+		if (thread.id === this.message.channelID) {
 			this.stop('threadDelete');
 		}
 	}

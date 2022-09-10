@@ -38,26 +38,26 @@ export type InteractionCollectorEndReasons = 'guildDelete' | 'channelDelete' | '
 export class InteractionCollector<K extends InteractionTypes = InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K] = keyof MappedInteractionTypesToComponentTypes[K]> extends Collector<MappedInteractionTypesToComponentTypes[K][T], InteractionCollectorEndReasons> {
 	private channel: Oceanic.AnyTextChannel | Oceanic.Uncached | null = null;
 	private componentType: T | null = null;
-	private guildId: string | null = null;
+	private guildID: string | null = null;
 	private interactionType: K | null = null;
-	private messageId: string | null = null;
-	private messageInteractionId: string | null = null;
+	private messageID: string | null = null;
+	private messageInteractionID: string | null = null;
 
 	public constructor(private client: Oceanic.Client, public options: InteractionCollectorOptionsWithGenerics<K, T> = {}) {
 		super(options);
 
-		this.messageId = options.message?.id ?? null;
-		this.messageInteractionId = options.interaction?.id ?? null;
+		this.messageID = options.message?.id ?? null;
+		this.messageInteractionID = options.interaction?.id ?? null;
 		this.channel = options.interaction?.channel ?? options.message?.channel ?? options.channel ?? null;
-		this.guildId = options.interaction?.guildID ?? options.message?.guildID ?? options.guild?.id ?? (options.channel instanceof Oceanic.GuildChannel ? options.channel.guild.id : null);
+		this.guildID = options.interaction?.guildID ?? options.message?.guildID ?? options.guild?.id ?? (options.channel instanceof Oceanic.GuildChannel ? options.channel.guild.id : null);
 		this.componentType = options.componentType ?? null;
 		this.interactionType = options.interactionType ?? null;
 
 		const bulkDeleteListener = (messages: Oceanic.PossiblyUncachedMessage[]): void => {
-			if (messages.find((message) => message.id === this.messageId)) this.stop('messageDelete');
+			if (messages.find((message) => message.id === this.messageID)) this.stop('messageDelete');
 		};
 
-		if (this.messageId || this.messageInteractionId) {
+		if (this.messageID || this.messageInteractionID) {
 			this.handleMessageDeletion = this.handleMessageDeletion.bind(this);
 			this.client.on('messageDelete', this.handleMessageDeletion);
 			this.client.on('messageDeleteBulk', bulkDeleteListener);
@@ -70,7 +70,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 			this.client.on('threadDelete', this.handleThreadDeletion);
 		}
 
-		if (this.guildId) {
+		if (this.guildID) {
 			this.handleGuildDeletion = this.handleGuildDeletion.bind(this);
 			this.client.on('guildDelete', this.handleGuildDeletion);
 		}
@@ -94,17 +94,17 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 	}
 
 	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
-		if (guild.id === this.guildId) {
+		if (guild.id === this.guildID) {
 			this.stop('guildDelete');
 		}
 	}
 
 	private handleMessageDeletion(message: Oceanic.PossiblyUncachedMessage): void {
-		if (message.id === this.messageId) {
+		if (message.id === this.messageID) {
 			this.stop('messageDelete');
 		}
 
-		if ('interaction' in message && message.interaction?.id === this.messageInteractionId) {
+		if ('interaction' in message && message.interaction?.id === this.messageInteractionID) {
 			this.stop('messageDelete');
 		}
 	}
@@ -119,11 +119,11 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		if (this.interactionType && interaction.type !== this.interactionType) return null;
 		if (interaction.type === Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT) {
 			if (this.componentType && interaction.data.componentType !== this.componentType) return null;
-			if (this.messageId && interaction.message.id !== this.messageId) return null;
-			if (this.messageInteractionId && interaction.message.interaction?.id !== this.messageInteractionId) return null;
+			if (this.messageID && interaction.message.id !== this.messageID) return null;
+			if (this.messageInteractionID && interaction.message.interaction?.id !== this.messageInteractionID) return null;
 		}
-		if (this.channel && interaction.channel.id !== this.channel.id) return null;
-		if (this.guildId && interaction.guild?.id !== this.guildId) return null;
+		if (this.channel && interaction.channelID !== this.channel.id) return null;
+		if (this.guildID && interaction.guildID !== this.guildID) return null;
 
 		return interaction;
 	}
@@ -132,11 +132,11 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		if (this.interactionType && interaction.type !== this.interactionType) return null;
 		if (interaction.type === Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT) {
 			if (this.componentType && interaction.data.componentType !== this.componentType) return null;
-			if (this.messageId && interaction.message.id !== this.messageId) return null;
-			if (this.messageInteractionId && interaction.message.interaction?.id !== this.messageInteractionId) return null;
+			if (this.messageID && interaction.message.id !== this.messageID) return null;
+			if (this.messageInteractionID && interaction.message.interaction?.id !== this.messageInteractionID) return null;
 		}
-		if (this.channel && interaction.channel.id !== this.channel.id) return null;
-		if (this.guildId && interaction.guild?.id !== this.guildId) return null;
+		if (this.channel && interaction.channelID !== this.channel.id) return null;
+		if (this.guildID && interaction.guildID !== this.guildID) return null;
 
 		return interaction;
 	}
