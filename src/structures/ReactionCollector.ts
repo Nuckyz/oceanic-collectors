@@ -1,5 +1,4 @@
 import Collector, { CollectorOptions } from './Collector';
-import { PossiblyUncachedMessage, PossiblyUncachedThread, Uncached } from '../types';
 import * as Oceanic from 'oceanic.js';
 
 export interface CollectedReaction<T extends Oceanic.Message> {
@@ -14,7 +13,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 	public constructor(private client: Oceanic.Client, private message: T, public options: CollectorOptions<CollectedReaction<T>> = {}) {
 		super(options);
 
-		const bulkDeleteListener = (messages: PossiblyUncachedMessage[]): void => {
+		const bulkDeleteListener = (messages: Oceanic.PossiblyUncachedMessage[]): void => {
 			if (messages.find((message) => message.id === this.message.id)) this.stop('messageDelete');
 		};
 
@@ -51,7 +50,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 		}
 	}
 
-	private handleGuildDeletion(guild: Oceanic.Guild | Uncached): void {
+	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
 		if (this.message.channel instanceof Oceanic.GuildChannel) {
 			if (guild.id === this.message.channel.guild.id) {
 				this.stop('guildDelete');
@@ -59,13 +58,13 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 		}
 	}
 
-	private handleMessageDeletion(message: PossiblyUncachedMessage): void {
+	private handleMessageDeletion(message: Oceanic.PossiblyUncachedMessage): void {
 		if (message.id === this.message.id) {
 			this.stop('messageDelete');
 		}
 	}
 
-	private handleThreadDeletion(thread: PossiblyUncachedThread): void {
+	private handleThreadDeletion(thread: Oceanic.PossiblyUncachedThread): void {
 		if (thread.id === this.message.channel.id) {
 			this.stop('threadDelete');
 		}

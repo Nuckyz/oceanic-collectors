@@ -1,5 +1,4 @@
 import Collector, { CollectorOptions } from './Collector';
-import { Uncached, PossiblyUncachedMessage, PossiblyUncachedThread } from '../types';
 import * as Oceanic from 'oceanic.js';
 
 export type MessageCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete';
@@ -8,7 +7,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 	public constructor(private client: Oceanic.Client, private channel: T, public options: CollectorOptions<Oceanic.Message<T>> = {}) {
 		super(options);
 
-		const bulkDeleteListener = (messages: PossiblyUncachedMessage[]): void => {
+		const bulkDeleteListener = (messages: Oceanic.PossiblyUncachedMessage[]): void => {
 			for (const message of messages.values()) this.handleDispose(message);
 		};
 
@@ -39,7 +38,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 		}
 	}
 
-	private handleGuildDeletion(guild: Oceanic.Guild | Uncached): void {
+	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
 		if (this.channel instanceof Oceanic.GuildChannel) {
 			if (guild.id === this.channel.guild.id) {
 				this.stop('guildDelete');
@@ -47,7 +46,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 		}
 	}
 
-	private handleThreadDeletion(thread: PossiblyUncachedThread): void {
+	private handleThreadDeletion(thread: Oceanic.PossiblyUncachedThread): void {
 		if (thread.id === this.channel.id) {
 			this.stop('threadDelete');
 		}
@@ -59,7 +58,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 		return message;
 	}
 
-	public dispose(message: PossiblyUncachedMessage): PossiblyUncachedMessage | null {
+	public dispose(message: Oceanic.PossiblyUncachedMessage): Oceanic.PossiblyUncachedMessage | null {
 		if (message.channel.id !== this.channel.id) return null;
 
 		return message;

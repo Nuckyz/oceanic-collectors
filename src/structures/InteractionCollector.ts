@@ -1,5 +1,5 @@
 import Collector, { CollectorOptions } from './Collector';
-import { ButtonComponentInteraction, SelectMenuComponentInteraction, Uncached, PossiblyUncachedMessage, PossiblyUncachedThread } from '../types';
+import { ButtonComponentInteraction, SelectMenuComponentInteraction } from '../types';
 import * as Oceanic from 'oceanic.js';
 
 export type ComponentTypes = typeof Oceanic.Constants.ComponentTypes.BUTTON | typeof Oceanic.Constants.ComponentTypes.SELECT_MENU
@@ -36,7 +36,7 @@ export type InteractionCollectorOptionsWithGenerics<K extends InteractionTypes, 
 export type InteractionCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete' | 'messageDelete';
 
 export class InteractionCollector<K extends InteractionTypes = InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K] = keyof MappedInteractionTypesToComponentTypes[K]> extends Collector<MappedInteractionTypesToComponentTypes[K][T], InteractionCollectorEndReasons> {
-	private channel: Oceanic.AnyTextChannel | Uncached | null = null;
+	private channel: Oceanic.AnyTextChannel | Oceanic.Uncached | null = null;
 	private componentType: T | null = null;
 	private guildId: string | null = null;
 	private interactionType: K | null = null;
@@ -53,7 +53,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		this.componentType = options.componentType ?? null;
 		this.interactionType = options.interactionType ?? null;
 
-		const bulkDeleteListener = (messages: PossiblyUncachedMessage[]): void => {
+		const bulkDeleteListener = (messages: Oceanic.PossiblyUncachedMessage[]): void => {
 			if (messages.find((message) => message.id === this.messageId)) this.stop('messageDelete');
 		};
 
@@ -93,13 +93,13 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		}
 	}
 
-	private handleGuildDeletion(guild: Oceanic.Guild | Uncached): void {
+	private handleGuildDeletion(guild: Oceanic.Guild | Oceanic.Uncached): void {
 		if (guild.id === this.guildId) {
 			this.stop('guildDelete');
 		}
 	}
 
-	private handleMessageDeletion(message: PossiblyUncachedMessage): void {
+	private handleMessageDeletion(message: Oceanic.PossiblyUncachedMessage): void {
 		if (message.id === this.messageId) {
 			this.stop('messageDelete');
 		}
@@ -109,7 +109,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		}
 	}
 
-	private handleThreadDeletion(thread: PossiblyUncachedThread): void {
+	private handleThreadDeletion(thread: Oceanic.PossiblyUncachedThread): void {
 		if (thread.id === this.channel?.id) {
 			this.stop('threadDelete');
 		}
