@@ -75,6 +75,9 @@ export abstract class Collector<T, V extends string = string> extends TypedEvent
 		return args;
 	};
 
+	/**
+	 * @param options The collector options.
+	 */
 	public constructor(public options: CollectorOptions<T> = {}) {
 		super();
 
