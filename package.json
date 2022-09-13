@@ -20,7 +20,7 @@
     "prepare": "tsc"
   },
   "peerDependencies": {
-    "oceanic.js": "^1.0.0-dev.2d80a89"
+    "oceanic.js": "^1.0.0-dev.b239915"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

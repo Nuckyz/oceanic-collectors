@@ -22,19 +22,26 @@ export interface MappedInteractionTypesToComponentTypes {
 }
 
 export interface InteractionCollectorOptions {
+	/** The channel to listen to interactions from. */
 	channel?: Oceanic.AnyTextChannel;
+	/** The guild to listen to interactions from. */
 	guild?: Oceanic.Guild;
+	/** The interaction response to listen to message component interactions from. */
 	interaction?: Oceanic.AnyInteractionGateway;
+	/** The message to listen to interactions from. */
 	message?: Oceanic.Message;
 }
 
 export type InteractionCollectorOptionsWithGenerics<K extends InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K]> = CollectorOptions<MappedInteractionTypesToComponentTypes[K][T]> & {
+	/** The type of components to listen for. */
 	componentType?: T;
+	/** The type of interactions to listen for. */
 	interactionType?: K;
 } & InteractionCollectorOptions
 
 export type InteractionCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete' | 'messageDelete';
 
+/** Collects interactions. Will automatically stop if the message, channel, or guild is deleted. */
 export class InteractionCollector<K extends InteractionTypes = InteractionTypes, T extends keyof MappedInteractionTypesToComponentTypes[K] = keyof MappedInteractionTypesToComponentTypes[K]> extends Collector<MappedInteractionTypesToComponentTypes[K][T], InteractionCollectorEndReasons> {
 	private channel: Oceanic.AnyTextChannel | Oceanic.Uncached | null = null;
 	private componentType: T | null = null;
@@ -43,6 +50,10 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 	private messageID: string | null = null;
 	private messageInteractionID: string | null = null;
 
+	/**
+	 * @param client The Oceanic client to apply the collector on.
+	 * @param options The collector options.
+	 */
 	public constructor(private client: Oceanic.Client, public options: InteractionCollectorOptionsWithGenerics<K, T> = {}) {
 		super(options);
 
@@ -115,7 +126,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		}
 	}
 
-	public collect(interaction: Oceanic.AnyInteractionGateway): Oceanic.AnyInteractionGateway | null {
+	protected collect(interaction: Oceanic.AnyInteractionGateway): Oceanic.AnyInteractionGateway | null {
 		if (this.interactionType && interaction.type !== this.interactionType) return null;
 		if (interaction.type === Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT) {
 			if (this.componentType && interaction.data.componentType !== this.componentType) return null;
@@ -128,7 +139,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		return interaction;
 	}
 
-	public dispose(interaction: Oceanic.AnyInteractionGateway): Oceanic.AnyInteractionGateway | null {
+	protected dispose(interaction: Oceanic.AnyInteractionGateway): Oceanic.AnyInteractionGateway | null {
 		if (this.interactionType && interaction.type !== this.interactionType) return null;
 		if (interaction.type === Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT) {
 			if (this.componentType && interaction.data.componentType !== this.componentType) return null;
@@ -139,14 +150,14 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		if (this.guildID && interaction.guildID !== this.guildID) return null;
 
 		return interaction;
-	}
-
-	public empty(): void {
-		this.collected = [];
-		this.checkEnd();
 	}
 }
 
+/**
+ * Await a compontent interaction.
+ * @param client The Oceanic client to apply the collector on.
+ * @param options The options to await the compontent interaction with.
+ */
 export function awaitComponentInteraction<T extends ComponentTypes = ComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT, T> = {}): Promise<MappedComponentTypes[T] | null> {
 	const newOptions = {
 		...options,
@@ -166,6 +177,11 @@ export function awaitComponentInteraction<T extends ComponentTypes = ComponentTy
 	});
 }
 
+/**
+ * Await a modal submit.
+ * @param client The Oceanic client to apply the collector on.
+ * @param options The options to await the modal submit with.
+ */
 export function awaitModalSubmit<T extends ModalComponentTypes = ModalComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MODAL_SUBMIT, T>): Promise<MappedModalComponentTypes[T] | null> {
 	const newOptions = {
 		...options,

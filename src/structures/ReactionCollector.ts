@@ -2,14 +2,21 @@ import Collector, { CollectorOptions } from './Collector';
 import * as Oceanic from 'oceanic.js';
 
 export interface CollectedReaction<T extends Oceanic.Message> {
+	/** The message this reaction is from. */
 	message: T;
+	/** The reaction collected. */
 	reaction: Oceanic.PartialEmoji;
+	/** The user who reacted. */
 	user: Oceanic.Member | Oceanic.Uncached;
 }
 
 export type ReactionCollectorEndReasons = 'guildDelete' | 'channelDelete' | 'threadDelete' | 'messageDelete';
 
 export class ReactionCollector<T extends Oceanic.Message> extends Collector<CollectedReaction<T>, ReactionCollectorEndReasons> {
+	/**
+	 * @param client The Oceanic client to apply the collector on.
+	 * @param options The collector options.
+	 */
 	public constructor(private client: Oceanic.Client, private message: T, public options: CollectorOptions<CollectedReaction<T>> = {}) {
 		super(options);
 
@@ -70,7 +77,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 		}
 	}
 
-	public collect(message: T, reaction: Oceanic.PartialEmoji, user: Oceanic.Member | Oceanic.Uncached): CollectedReaction<T> | null {
+	protected collect(message: T, reaction: Oceanic.PartialEmoji, user: Oceanic.Member | Oceanic.Uncached): CollectedReaction<T> | null {
 		if (message.id !== this.message.id) return null;
 
 		return {
@@ -80,7 +87,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 		};
 	}
 
-	public dispose(message: T, reaction: Oceanic.PartialEmoji, userId: string): CollectedReaction<T> | null {
+	protected dispose(message: T, reaction: Oceanic.PartialEmoji, userId: string): CollectedReaction<T> | null {
 		if (message.id !== this.message.id) return null;
 
 		return {
@@ -91,13 +98,14 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 			}
 		};
 	}
-
-	public empty(): void {
-		this.collected = [];
-		this.checkEnd();
-	}
 }
 
+/**
+ * Await reactions.
+ * @param client The Oceanic client to apply the collector on.
+ * @param message The message to await reactions from.
+ * @param options The options to await the reactions with.
+ */
 export function awaitReactions<T extends Oceanic.Message>(client: Oceanic.Client, message: T, options: CollectorOptions<CollectedReaction<T>> = {}): Promise<CollectedReaction<T>[]> {
 	return new Promise<CollectedReaction<T>[]>((resolve): void => {
 		const collector = new ReactionCollector(client, message, options);
