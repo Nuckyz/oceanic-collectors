@@ -8,7 +8,7 @@ Installing
 
 You will need NodeJS 16.16.0+.
 ```
-npm install Nuckyz/oceanic-collectors
+npm install oceanic-collectors
 ```
 
 Message Collector Example
