@@ -36,7 +36,7 @@ export class MessageCollector<T extends Oceanic.AnyTextChannel> extends Collecto
 		});
 	}
 
-	private handleChannelDeletion(channel: Oceanic.AnyChannel): void {
+	private handleChannelDeletion(channel: Oceanic.AnyGuildChannelWithoutThreads | Oceanic.PrivateChannel | Oceanic.DeletedPrivateChannel): void {
 		if (channel.id === this.channel.id || (this.channel instanceof Oceanic.GuildChannel && channel.id === this.channel.parentID)) {
 			this.stop('channelDelete');
 		}

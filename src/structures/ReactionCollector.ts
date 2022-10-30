@@ -51,7 +51,7 @@ export class ReactionCollector<T extends Oceanic.Message> extends Collector<Coll
 		});
 	}
 
-	private handleChannelDeletion(channel: Oceanic.AnyChannel): void {
+	private handleChannelDeletion(channel: Oceanic.AnyGuildChannelWithoutThreads | Oceanic.PrivateChannel | Oceanic.DeletedPrivateChannel): void {
 		if (channel.id === this.message.channelID || (this.message.channel instanceof Oceanic.GuildChannel && channel.id === this.message.channel.parentID)) {
 			this.stop('channelDelete');
 		}

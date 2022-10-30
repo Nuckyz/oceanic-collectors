@@ -1,15 +1,15 @@
 import Collector, { CollectorOptions } from './Collector';
-import { ButtonComponentInteraction, SelectMenuComponentInteraction } from '../types';
 import * as Oceanic from 'oceanic.js';
-
-export type ComponentTypes = typeof Oceanic.Constants.ComponentTypes.BUTTON | typeof Oceanic.Constants.ComponentTypes.SELECT_MENU
-export type ModalComponentTypes = typeof Oceanic.Constants.ComponentTypes.TEXT_INPUT;
 
 export type InteractionTypes = typeof Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT | typeof Oceanic.Constants.InteractionTypes.MODAL_SUBMIT;
 
 export interface MappedComponentTypes {
-	[Oceanic.Constants.ComponentTypes.BUTTON]: ButtonComponentInteraction;
-	[Oceanic.Constants.ComponentTypes.SELECT_MENU]: SelectMenuComponentInteraction;
+	[Oceanic.Constants.ComponentTypes.BUTTON]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.BUTTON>;
+	[Oceanic.Constants.ComponentTypes.STRING_SELECT]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.STRING_SELECT>;
+	[Oceanic.Constants.ComponentTypes.USER_SELECT]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.USER_SELECT>;
+	[Oceanic.Constants.ComponentTypes.ROLE_SELECT]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.ROLE_SELECT>;
+	[Oceanic.Constants.ComponentTypes.MENTIONABLE_SELECT]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.MENTIONABLE_SELECT>;
+	[Oceanic.Constants.ComponentTypes.CHANNEL_SELECT]: Oceanic.ComponentInteraction<Oceanic.Constants.ComponentTypes.CHANNEL_SELECT>;
 }
 
 export interface MappedModalComponentTypes {
@@ -98,7 +98,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
 		});
 	}
 
-	private handleChannelDeletion(channel: Oceanic.AnyChannel): void {
+	private handleChannelDeletion(channel: Oceanic.AnyGuildChannelWithoutThreads | Oceanic.PrivateChannel | Oceanic.DeletedPrivateChannel): void {
 		if (channel.id === this.channel?.id || (this.channel instanceof Oceanic.GuildChannel && channel.id === this.channel.parentID)) {
 			this.stop('channelDelete');
 		}
@@ -158,7 +158,7 @@ export class InteractionCollector<K extends InteractionTypes = InteractionTypes,
  * @param client The Oceanic client to apply the collector on.
  * @param options The options to await the compontent interaction with.
  */
-export function awaitComponentInteraction<T extends ComponentTypes = ComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT, T> = {}): Promise<MappedComponentTypes[T] | null> {
+export function awaitComponentInteraction<T extends Oceanic.Constants.MessageComponentTypes = Oceanic.Constants.MessageComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT, T> = {}): Promise<MappedComponentTypes[T] | null> {
 	const newOptions = {
 		...options,
 		interactionType: Oceanic.Constants.InteractionTypes.MESSAGE_COMPONENT,
@@ -182,7 +182,7 @@ export function awaitComponentInteraction<T extends ComponentTypes = ComponentTy
  * @param client The Oceanic client to apply the collector on.
  * @param options The options to await the modal submit with.
  */
-export function awaitModalSubmit<T extends ModalComponentTypes = ModalComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MODAL_SUBMIT, T>): Promise<MappedModalComponentTypes[T] | null> {
+export function awaitModalSubmit<T extends Oceanic.Constants.ModalComponentTypes = Oceanic.Constants.ModalComponentTypes>(client: Oceanic.Client, options: InteractionCollectorOptionsWithGenerics<typeof Oceanic.Constants.InteractionTypes.MODAL_SUBMIT, T>): Promise<MappedModalComponentTypes[T] | null> {
 	const newOptions = {
 		...options,
 		interactionType: Oceanic.Constants.InteractionTypes.MODAL_SUBMIT,
